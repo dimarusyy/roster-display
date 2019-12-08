@@ -3,11 +3,6 @@
 #include <QCoreApplication>
 #include <QThread>
 
-namespace {
-static constexpr auto ROSTER_GROUPORDER_ID = "groupOrder";
-static constexpr auto ROSTER_GROUP_ID = "group";
-}
-
 const QUrl FetchJson::defaultUrl{"https://file.wowapp.me/owncloud/index.php/s/sGOXibS0ZSspQE8/download"};
 
 FetchJson::FetchJson(QObject *parent)
@@ -25,7 +20,7 @@ void FetchJson::fetch(const QUrl& url)
                      [this](QNetworkReply* reply)
     {
         // handle error
-        auto ec = reply->error();
+        const auto ec = reply->error();
         if (ec)
         {
             qDebug() << reply->errorString();
@@ -33,25 +28,11 @@ void FetchJson::fetch(const QUrl& url)
             return;
         }
 
-        QByteArray result = reply->readAll();
+        const QByteArray result = reply->readAll();
         QThread *thread = QThread::create([this, result]()
         {
             auto json = std::make_shared<nlohmann::json>();
             *json = json->parse(result.begin(), result.end()).at("roster");
-            std::sort(json->begin(),
-                      json->end(),
-                      [](decltype(*json->begin()) lhs, decltype(*json->begin()) rhs)
-            {
-                const auto lhs_groupOrder = lhs[ROSTER_GROUPORDER_ID].get<int>();
-                const auto rhs_groupOrder = rhs[ROSTER_GROUPORDER_ID].get<int>();
-
-                const auto lhs_group = lhs[ROSTER_GROUP_ID].get<std::string>();
-                const auto rhs_group = rhs[ROSTER_GROUP_ID].get<std::string>();
-
-                return lhs_groupOrder < rhs_groupOrder ||
-                        (!(lhs_groupOrder < rhs_groupOrder) && lhs_group < rhs_group);
-            });
-
             qDebug() << "Fetched : [" << json->size() << "] elements";
             emit succeeded(json);
         }

@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         fetchjson.cpp \
+        filteredrostermodel.cpp \
         main.cpp \
         rosterlistmodel.cpp
 
@@ -37,5 +38,5 @@ include (3rdparty/QuickDownload/quickdownload.pri)
 HEADERS += \
     3rdparty/nlohmann/json.hpp \
     fetchjson.h \
-    rosterdetails.h \
+    filteredrostermodel.h \
     rosterlistmodel.h

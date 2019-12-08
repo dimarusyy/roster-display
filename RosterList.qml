@@ -32,7 +32,7 @@ ListView {
                 rosterDetailsDialog.language = model.language
 
                 rosterDetailsDialog.visible = true
-                console.log("Index [" + index + "] clicked, w=[" + parent.width + "], h=[" + parent.height + "]");
+                console.log("Index [" + index + "], group=[" + model.group + "], groupOrder=[" + model.groupOrder + "]");
             }
         }
 

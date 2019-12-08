@@ -17,10 +17,18 @@ Window {
         anchors.centerIn: parent
     }
 
-    RosterListModel {
-        id: rosterListModel
+    FilteredRosterModel {
+        id: rosterModel
         onLoaded: loadingDataIndicator.running = false
         onLoading: loadingDataIndicator.running = true
+    }
+
+    ListModel {
+        id: rosterRolesModel
+        ListElement { text: qsTr("GroupOrder"); value: RosterListModel.GroupOrder }
+        ListElement { text: qsTr("UserName"); value: RosterListModel.UserName }
+        ListElement { text: qsTr("FirstName"); value: RosterListModel.FirstName }
+        ListElement { text: qsTr("LastName"); value: RosterListModel.LastName }
     }
 
     ColumnLayout {
@@ -35,23 +43,36 @@ Window {
             Text {
                 id: element
                 text: qsTr("Filter")
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 font.pixelSize: 12
             }
 
             TextField {
                 id: textField
+                Layout.fillHeight: true
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 Layout.preferredHeight: 20
                 Layout.preferredWidth: 256
                 placeholderText: qsTr("Text Field")
+
+                onTextChanged: {
+                    rosterModel.setFilterFixedString(text)
+                }
             }
 
-            Button {
-                id: button
-                text: qsTr("Apply")
-                Layout.preferredHeight: 23
-                Layout.preferredWidth: 84
+            ComboBox {
+                id: comboBox
+                Layout.fillWidth: true
+                model: rosterRolesModel
+                Layout.fillHeight: true
+
+                onCurrentIndexChanged: {
+                    rosterModel.setSortingColumn(model.get(currentIndex).value)
+                }
             }
         }
 
@@ -60,7 +81,7 @@ Window {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
-            listModel: rosterListModel
+            listModel: rosterModel
         }
     }
 }

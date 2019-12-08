@@ -1,15 +1,15 @@
+#include "filteredrostermodel.h"
+
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
-#include "rosterlistmodel.h"
-#include "rosterdetails.h"
+#include <QQmlContext>
 
 int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<RosterListModel>("App", 1, 0, "RosterListModel");
-    qmlRegisterUncreatableType<RosterDetails>( "RosterDetails", 1, 0, "RosterDetails", "interface" );
+    qmlRegisterType<FilteredRosterModel>("App", 1, 0, "FilteredRosterModel");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

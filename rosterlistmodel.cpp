@@ -1,5 +1,4 @@
 #include "rosterlistmodel.h"
-#include "rosterdetails.h"
 
 #include <QNetworkReply>
 #include <3rdparty/nlohmann/json.hpp>
@@ -80,6 +79,14 @@ QVariant RosterListModel::data(const QModelIndex& index, int role) const
     {
         rc = QString::fromStdString(account.value("language", ""));
     }
+    else if (role == RosterRoles::Group)
+    {
+        rc = QString::fromStdString(it->at("group").get<std::string>());
+    }
+    else if (role == RosterRoles::GroupOrder)
+    {
+        rc = it->at("groupOrder").get<uint>();
+    }
 
     return rc;
 }
@@ -95,7 +102,9 @@ QHash<int, QByteArray> RosterListModel::roleNames() const
         {RosterRoles::Sex, "sex" },
         {RosterRoles::Country, "country" },
         {RosterRoles::Birthday, "birthday" },
-        {RosterRoles::Language, "language" }
+        {RosterRoles::Language, "language" },
+        {RosterRoles::Group, "group" },
+        {RosterRoles::GroupOrder, "groupOrder" }
     };
 }
 
@@ -127,5 +136,5 @@ void RosterListModel::fetchMore(const QModelIndex& parent)
     _fetched += to_fetch;
     endInsertRows();
 
-    emit itemPopulated(static_cast<decltype(_fetched)>(to_fetch));
+    emit itemsPopulated(static_cast<decltype(_fetched)>(to_fetch));
 }

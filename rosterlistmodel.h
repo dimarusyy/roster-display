@@ -7,12 +7,10 @@
 
 #include <3rdparty/nlohmann/json.hpp>
 #include "fetchjson.h"
-#include "rosterdetails.h"
 
 class RosterListModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(RosterRoles)
 public:
     enum RosterRoles
     {
@@ -23,8 +21,11 @@ public:
         Sex,
         Country,
         Birthday,
-        Language
+        Language,
+        Group,
+        GroupOrder
     };
+    Q_ENUM(RosterRoles)
 
     RosterListModel(QObject* parent = nullptr);
 
@@ -34,7 +35,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;    
 
 signals:
-    void itemPopulated(int);
+    void itemsPopulated(int);
     void loading();
     void loaded();
 
