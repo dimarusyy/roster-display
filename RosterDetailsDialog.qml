@@ -26,12 +26,71 @@ Popup {
         radius: 5
         border.width: 2
 
+        Rectangle {
+            id: avatar
+            width: 128
+            height: width
+            color: model.avatarColor
+            radius: width * 0.5
+            anchors.verticalCenterOffset: 0
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.leftMargin: 10
+            anchors.topMargin: 10
+        }
+
         ColumnLayout {
+            anchors.left: avatar.right
+            anchors.right: layoutValues.left
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            anchors.rightMargin: 10
+            Layout.fillHeight: true
+
+            Text {
+                text: "FirstName:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            Text {
+                text: "LastName:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            Text {
+                text: "UserName:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            Text {
+                text: "Sex:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            Text {
+                text: "Country:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            Text {
+                text: "Birthday:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+            Text {
+                text: "Language:"
+                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                Layout.fillWidth: false
+            }
+        }
+
+        ColumnLayout {
+            id: layoutValues
+
+            width: parent.width/2 - 20
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            anchors.left: layoutDesc.right
-            anchors.leftMargin: 10
             Layout.fillHeight: true
 
             Text {
@@ -76,59 +135,5 @@ Popup {
                 Layout.fillWidth: true
             }
         }
-
-        ColumnLayout {
-            id: layoutDesc
-
-            width: parent.width/2
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.top: parent.top
-            Layout.fillHeight: true
-
-            Text {
-                text: "FirstName:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-            Text {
-                text: "LastName:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-            Text {
-                text: "UserName:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-            Text {
-                text: "Sex:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-            Text {
-                text: "Country:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-            Text {
-                text: "Birthday:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-            Text {
-                text: "Language:"
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                Layout.fillWidth: false
-            }
-        }
-
     }
 }
-
-
-/*##^##
-Designer {
-    D{i:2;anchors_y:40}D{i:10;anchors_x:0;anchors_y:40}
-}
-##^##*/
