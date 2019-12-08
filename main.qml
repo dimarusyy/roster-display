@@ -1,118 +1,86 @@
 import QtQuick 2.13
 import QtQuick.Window 2.13
-import App 1.0
 import QtQuick.Layouts 1.0
+import QtQuick.Controls 1.6
+import QtQuick.Extras 1.4
+import QtQuick.Controls.Styles.Desktop 1.0
+
+import App 1.0
 
 Window {
     id: window
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("Display Roster")
+
+    Timer {
+        id: modelUpdate
+        interval: 2000;
+        repeat: true
+        running: true
+        triggeredOnStart: true
+
+        onTriggered: {
+
+        }
+    }
 
     ColumnLayout {
-        id: columnLayout
-        spacing: 10
         anchors.fill: parent
+        anchors.margins: 20
+        x: 0
+        y: 0
 
         RowLayout {
-            anchors.left: parent.left
-            anchors.leftMargin: 5
-            anchors.top: parent.top
-            anchors.topMargin: 5
-            anchors.right: parent.right
-            anchors.rightMargin: 5
+            Layout.fillWidth: true
+            Layout.fillHeight: false
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
 
             Text {
                 id: element
-                text: qsTr("Filter:")
-                Layout.preferredHeight: 31
-                Layout.preferredWidth: 87
-                styleColor: "#c9a1a1"
-                horizontalAlignment: Text.AlignRight
-                verticalAlignment: Text.AlignVCenter
-                fontSizeMode: Text.Fit
-                renderType: Text.NativeRendering
+                text: qsTr("Filter")
                 font.pixelSize: 12
             }
 
-            TextEdit {
-                id: textEdit
-                text: qsTr("*")
+            TextField {
+                id: textField
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 Layout.preferredHeight: 20
-                Layout.preferredWidth: 360
-                transformOrigin: Item.Center
-                font.pixelSize: 12
+                Layout.preferredWidth: 256
+                placeholderText: qsTr("Text Field")
             }
 
-            Rectangle {
-                id: rectangle
-                width: 77
-                height: 44
-                color: "#ebb6b6"
-                radius: 10
-
-                Text {
-                    id: element1
-                    text: qsTr("Apply")
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    anchors.fill: parent
-                    font.pixelSize: 12
-                }
+            Button {
+                id: button
+                text: qsTr("Apply")
+                Layout.preferredHeight: 23
+                Layout.preferredWidth: 84
             }
+        }
+
+        RosterListModel {
+            id : rosterModel
         }
 
         ListView {
             id: listView
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             visible: true
-            anchors.top: parent.top
-            anchors.topMargin: 0
-            anchors.right: parent.right
-            anchors.rightMargin: 0
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 10
             spacing : 10
-            model: RosterListModel {}
+            model: rosterModel
             clip: true
 
-            delegate: Rectangle {
-                //implicitHeight: text.height
-                width: listView.width
-                height: 60
-                color: "grey"
-                border.color: "black"
-                radius: 10
-
-                Row
-                {
-                    anchors.margins: 5
-                    anchors.fill: parent
-
-                    Rectangle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 32
-                        height: width
-                        color: model.avatarColor
-                        radius: width * 0.5
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-                        renderType: Text.NativeRendering
-                        text: model.firstName + " " + model.lastName
-                    }
-                }
-            }
+            delegate: RosterItem {}
         }
     }
-
 }
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:2;anchors_x:53;anchors_y:16}
 }
 ##^##*/

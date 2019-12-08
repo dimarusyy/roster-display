@@ -3,27 +3,11 @@
 
 #include <QObject>
 #include <QNetworkReply>
-#include <QEvent>
+#include <QMetaType>
 
 #include <3rdparty/nlohmann/json.hpp>
 
-class FetchJsonEvent : public QEvent
-{
-public:
-    FetchJsonEvent(nlohmann::json&& json)
-        : QEvent(QEvent::Type(QEvent::User + 1))
-        , _json(json)
-    {
-    }
-
-    auto& data()
-    {
-        return _json;
-    }
-
-private:
-    nlohmann::json _json;
-};
+Q_DECLARE_METATYPE(std::shared_ptr<nlohmann::json>)
 
 class FetchJson : public QObject
 {
@@ -33,6 +17,10 @@ public:
 
     explicit FetchJson(QObject *parent = nullptr);
     void fetch(const QUrl&);
+
+signals:
+    void failed(const QNetworkReply::NetworkError& ec);
+    void succeeded(std::shared_ptr<nlohmann::json>);
 
 public slots:
 

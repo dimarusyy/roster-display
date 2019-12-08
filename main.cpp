@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<RosterListModel>("App", 1, 0, "RosterListModel");
+    qRegisterMetaType<nlohmann::json*>("nlohhman::json*");
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

@@ -8,7 +8,14 @@ static constexpr std::size_t ROSTER_FETCH_SIZE = 100;
 RosterListModel::RosterListModel(QObject* parent)
     : QAbstractListModel(parent)
     , _fetchJson(parent)
+    , _json(std::make_shared<nlohmann::json>())
 {
+    QObject::connect(&_fetchJson, &FetchJson::succeeded, this, [this](std::shared_ptr<nlohmann::json> json)
+    {
+        QAbstractListModel::beginResetModel();
+        _json = json;
+        QAbstractListModel::endResetModel();
+    }, Qt::QueuedConnection);
     _fetchJson.fetch({});
 }
 
@@ -22,10 +29,10 @@ QVariant RosterListModel::data(const QModelIndex& index, int role) const
     if (!index.isValid())
         return {};
 
-    if (static_cast<std::size_t>(index.row()) >= _json.size() || index.row() < 0)
+    if (static_cast<std::size_t>(index.row()) >= _json->size() || index.row() < 0)
         return {};
 
-    const auto it = _json.begin() + index.row();
+    const auto it = _json->begin() + index.row();
     if (role == RosterRoles::AvatarColor)
     {
         const auto sex = it->at("account").at("sex").get<std::string>();
@@ -61,7 +68,7 @@ bool RosterListModel::canFetchMore(const QModelIndex& parent) const
 {
     if (parent.isValid())
         return false;
-    return static_cast<std::size_t>(_fetched) < _json.size();
+    return static_cast<std::size_t>(_fetched) < _json->size();
 }
 
 void RosterListModel::fetchMore(const QModelIndex& parent)
@@ -69,7 +76,7 @@ void RosterListModel::fetchMore(const QModelIndex& parent)
     if (parent.isValid())
         return;
 
-    const auto to_fetch = std::min(ROSTER_FETCH_SIZE, _json.size() - static_cast<std::size_t>(_fetched));
+    const auto to_fetch = std::min(ROSTER_FETCH_SIZE, _json->size() - static_cast<std::size_t>(_fetched));
     if (to_fetch <= 0)
     {
         qDebug() << "No items to fetch";
@@ -81,18 +88,4 @@ void RosterListModel::fetchMore(const QModelIndex& parent)
     endInsertRows();
 
     emit itemPopulated(static_cast<decltype(_fetched)>(to_fetch));
-}
-
-bool RosterListModel::event(QEvent* event)
-{
-    if (event->type() == QEvent::User + 1)
-    {
-        auto& json = static_cast<FetchJsonEvent*>(event)->data();
-        beginResetModel();
-        _json.swap(json);
-        endResetModel();
-        return true;
-    }
-
-    return QAbstractListModel::event(event);
 }

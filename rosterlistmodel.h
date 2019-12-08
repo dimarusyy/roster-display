@@ -36,10 +36,9 @@ public slots:
 protected:
     bool canFetchMore(const QModelIndex &parent) const override;
     void fetchMore(const QModelIndex &parent) override;
-    bool event(QEvent*) override;
 
 private:
     FetchJson _fetchJson;
-    nlohmann::json _json;
+    std::shared_ptr<nlohmann::json> _json{};
     int _fetched{ 0 };    
 };
