@@ -1,5 +1,4 @@
-#ifndef FETCHJSON_H
-#define FETCHJSON_H
+#pragma once
 
 #include <QObject>
 #include <QNetworkReply>
@@ -27,5 +26,3 @@ public slots:
 private:
     std::unique_ptr<QNetworkAccessManager> _nam;
 };
-
-#endif // FETCHJSON_H

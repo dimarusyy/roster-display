@@ -3,5 +3,6 @@
         <file>main.qml</file>
         <file>RosterItem.qml</file>
         <file>RosterList.qml</file>
+        <file>RosterDetailsDialog.qml</file>
     </qresource>
 </RCC>

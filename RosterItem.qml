@@ -1,7 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.6
 
-
 Rectangle {
     property string firstName
     property string lastName

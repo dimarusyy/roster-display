@@ -37,4 +37,5 @@ include (3rdparty/QuickDownload/quickdownload.pri)
 HEADERS += \
     3rdparty/nlohmann/json.hpp \
     fetchjson.h \
+    rosterdetails.h \
     rosterlistmodel.h

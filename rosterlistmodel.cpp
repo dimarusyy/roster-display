@@ -1,7 +1,10 @@
 #include "rosterlistmodel.h"
+#include "rosterdetails.h"
 
 #include <QNetworkReply>
 #include <3rdparty/nlohmann/json.hpp>
+
+#include <iterator>
 
 static constexpr std::size_t ROSTER_FETCH_SIZE = 10;
 
@@ -38,18 +41,44 @@ QVariant RosterListModel::data(const QModelIndex& index, int role) const
 
     QVariant rc{};
     const auto it = _json->begin() + index.row();
+    const auto account = it->at("account");
     if (role == RosterRoles::AvatarColor)
     {
-        const auto sex = it->at("account").at("sex").get<std::string>();
+        const auto sex = account.value("sex", "");
         rc = (sex == "MALE" ? "#B5E6FF" : (sex == "FEMALE" ? "#FCD0FC" : "#E1E8ED"));
     }
     else if (role == RosterRoles::FirstName)
     {
-        rc = QString::fromStdString(it->at("account").at("firstName").get<std::string>());
+        rc = QString::fromStdString(account.value("firstName", ""));
     }
     else if (role == RosterRoles::LastName)
     {
-        rc = QString::fromStdString(it->at("account").at("lastName").get<std::string>());
+        rc = QString::fromStdString(account.value("lastName", ""));
+    }
+    else if (role == RosterRoles::UserName)
+    {
+        rc = QString::fromStdString(account.value("username",""));
+    }
+    else if (role == RosterRoles::Sex)
+    {
+        rc = QString::fromStdString(account.value("sex", ""));
+    }
+    else if (role == RosterRoles::Country)
+    {
+        rc = QString::fromStdString(account.value("country", ""));
+    }
+    else if (role == RosterRoles::Birthday)
+    {
+        if(account.contains("birthday"))
+        {
+            auto since_epoch = account.at("birthday").get<qint64>();
+            auto bd = QDateTime::fromMSecsSinceEpoch(since_epoch);
+            rc = bd.toString();
+        }
+    }
+    else if (role == RosterRoles::Language)
+    {
+        rc = QString::fromStdString(account.value("language", ""));
     }
 
     return rc;
@@ -62,6 +91,11 @@ QHash<int, QByteArray> RosterListModel::roleNames() const
         {RosterRoles::AvatarColor, "avatarColor" },
         {RosterRoles::FirstName, "firstName" },
         {RosterRoles::LastName, "lastName" },
+        {RosterRoles::UserName, "userName" },
+        {RosterRoles::Sex, "sex" },
+        {RosterRoles::Country, "country" },
+        {RosterRoles::Birthday, "birthday" },
+        {RosterRoles::Language, "language" }
     };
 }
 

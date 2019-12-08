@@ -2,13 +2,14 @@
 #include <QQmlApplicationEngine>
 
 #include "rosterlistmodel.h"
+#include "rosterdetails.h"
 
 int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<RosterListModel>("App", 1, 0, "RosterListModel");
-    qRegisterMetaType<nlohmann::json*>("nlohhman::json*");
+    qmlRegisterUncreatableType<RosterDetails>( "RosterDetails", 1, 0, "RosterDetails", "interface" );
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));

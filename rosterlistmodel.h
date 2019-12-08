@@ -7,6 +7,7 @@
 
 #include <3rdparty/nlohmann/json.hpp>
 #include "fetchjson.h"
+#include "rosterdetails.h"
 
 class RosterListModel : public QAbstractListModel
 {
@@ -17,7 +18,12 @@ public:
     {
         AvatarColor = Qt::UserRole + 1,
         FirstName,
-        LastName
+        LastName,
+        UserName,
+        Sex,
+        Country,
+        Birthday,
+        Language
     };
 
     RosterListModel(QObject* parent = nullptr);
@@ -42,5 +48,5 @@ protected:
 private:
     FetchJson _fetchJson;
     std::shared_ptr<nlohmann::json> _json{};
-    int _fetched{ 0 };    
+    int _fetched{ 0 };
 };
