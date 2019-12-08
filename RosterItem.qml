@@ -3,6 +3,9 @@ import QtQuick.Controls 1.6
 
 
 Rectangle {
+    property string firstName
+    property string lastName
+
     id: rectangle
     //implicitHeight: text.height
     width: listView.width
@@ -12,10 +15,15 @@ Rectangle {
     radius: 5
 
     Rectangle {
+        id : itemCircle
         width: 32
         height: width
         color: model.avatarColor
         radius: width * 0.5
+        anchors.verticalCenterOffset: 0
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        anchors.verticalCenter: parent.verticalCenter
     }
 
     Text {
@@ -23,7 +31,13 @@ Rectangle {
         y: 0
         width: 209
         height: 32
-        text: "#model.firstName + \"\\n\" + model.lastName#"
+        text: firstName + "\n" + lastName
+        verticalAlignment: Text.AlignVCenter
+        font.family: "Times New Roman"
+        font.bold: true
+        font.pointSize: 10
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: itemCircle.right
         renderType: Text.NativeRendering
     }
 }

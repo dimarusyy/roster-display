@@ -2,8 +2,6 @@ import QtQuick 2.13
 import QtQuick.Window 2.13
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 1.6
-import QtQuick.Extras 1.4
-import QtQuick.Controls.Styles.Desktop 1.0
 
 import App 1.0
 
@@ -14,23 +12,20 @@ Window {
     height: 480
     title: qsTr("Display Roster")
 
-    Timer {
-        id: modelUpdate
-        interval: 2000;
-        repeat: true
-        running: true
-        triggeredOnStart: true
+    BusyIndicator {
+        id: loadingDataIndicator
+        anchors.centerIn: parent
+    }
 
-        onTriggered: {
-
-        }
+    RosterListModel {
+        id: rosterListModel
+        onLoaded: loadingDataIndicator.running = false
+        onLoading: loadingDataIndicator.running = true
     }
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
-        x: 0
-        y: 0
 
         RowLayout {
             Layout.fillWidth: true
@@ -60,27 +55,13 @@ Window {
             }
         }
 
-        RosterListModel {
-            id : rosterModel
-        }
-
-        ListView {
-            id: listView
+        RosterList {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            visible: true
-            spacing : 10
-            model: rosterModel
-            clip: true
 
-            delegate: RosterItem {}
+            listModel: rosterListModel
         }
     }
 }
 
-/*##^##
-Designer {
-    D{i:2;anchors_x:53;anchors_y:16}
-}
-##^##*/

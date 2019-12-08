@@ -29,6 +29,8 @@ public:
 
 signals:
     void itemPopulated(int);
+    void loading();
+    void loaded();
 
 public slots:
     void loadFromUrl(const QUrl&);

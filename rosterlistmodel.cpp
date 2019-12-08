@@ -3,7 +3,7 @@
 #include <QNetworkReply>
 #include <3rdparty/nlohmann/json.hpp>
 
-static constexpr std::size_t ROSTER_FETCH_SIZE = 100;
+static constexpr std::size_t ROSTER_FETCH_SIZE = 10;
 
 RosterListModel::RosterListModel(QObject* parent)
     : QAbstractListModel(parent)
@@ -15,8 +15,12 @@ RosterListModel::RosterListModel(QObject* parent)
         QAbstractListModel::beginResetModel();
         _json = json;
         QAbstractListModel::endResetModel();
+
+        emit loaded();
     }, Qt::QueuedConnection);
+
     _fetchJson.fetch({});
+    emit loading();
 }
 
 int RosterListModel::rowCount(const QModelIndex& parent) const
@@ -32,21 +36,23 @@ QVariant RosterListModel::data(const QModelIndex& index, int role) const
     if (static_cast<std::size_t>(index.row()) >= _json->size() || index.row() < 0)
         return {};
 
+    QVariant rc{};
     const auto it = _json->begin() + index.row();
     if (role == RosterRoles::AvatarColor)
     {
         const auto sex = it->at("account").at("sex").get<std::string>();
-        return sex == "MALE" ? "#B5E6FF" : (sex == "FEMALE" ? "#FCD0FC" : "#E1E8ED");
+        rc = (sex == "MALE" ? "#B5E6FF" : (sex == "FEMALE" ? "#FCD0FC" : "#E1E8ED"));
     }
     else if (role == RosterRoles::FirstName)
     {
-        return QString::fromStdString(it->at("account").at("firstName").get<std::string>());
+        rc = QString::fromStdString(it->at("account").at("firstName").get<std::string>());
     }
     else if (role == RosterRoles::LastName)
     {
-        return QString::fromStdString(it->at("account").at("lastName").get<std::string>());
+        rc = QString::fromStdString(it->at("account").at("lastName").get<std::string>());
     }
-    else return {};
+
+    return rc;
 }
 
 QHash<int, QByteArray> RosterListModel::roleNames() const

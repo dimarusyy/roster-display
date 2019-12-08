@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>RosterItem.qml</file>
+        <file>RosterList.qml</file>
     </qresource>
 </RCC>
