@@ -1,9 +1,11 @@
 #include "fetchjson.h"
+#include "config.h"
 
 #include <QCoreApplication>
+#include <QNetworkReply>
 #include <QThread>
-
-const QUrl FetchJson::defaultUrl{"https://file.wowapp.me/owncloud/index.php/s/sGOXibS0ZSspQE8/download"};
+#include <QTextStream>
+#include <QDir>
 
 FetchJson::FetchJson(QObject *parent)
     : QObject(parent)
@@ -14,32 +16,88 @@ FetchJson::FetchJson(QObject *parent)
 
 void FetchJson::fetch(const QUrl& url)
 {
+    const auto update_cache = [](const QFileInfo& fi, const QByteArray& data){
+        // create dir
+        if(!fi.dir().exists() && !QDir().mkdir(fi.dir().path()))
+        {
+            throw std::runtime_error("Faled to create dir:[" + fi.dir().path().toStdString() + "]");
+        }
+
+        // save
+        QFile(fi.path()).remove();
+        QFile file(fi.filePath());
+        qDebug() << "Creating file: [" << fi.filePath() << "]";
+        if(file.open(QIODevice::WriteOnly))
+        {
+            if(-1 == file.write(data))
+            {
+                throw std::runtime_error("IO(write) failed");
+            }
+        }
+    };
+
+    const auto parse_json = [this, update_cache](const QFileInfo& fi, const QByteArray& data, bool updateCache){
+        QThread *thread = QThread::create([this, update_cache, fi, data, updateCache]()
+        {
+            try {
+                auto json = std::make_shared<nlohmann::json>();
+                *json = json->parse(data.begin(), data.end()).at("roster");
+                qDebug() << "Fetched : [" << json->size() << "] elements";
+                if(updateCache) update_cache(fi, data);
+                emit succeeded(json);
+            } catch (std::exception ex) {
+                QString ec ("Failed to parse json [" + QString::fromStdString(ex.what()) + "]");
+                qDebug() << ec;
+                emit failed(ec);
+            }
+        }
+        );
+        connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+        thread->start();
+    };
+
+    // check if cached
+    const auto roster_file = config::defaultCacheFile();
+    if(roster_file.exists())
+    {
+        const auto rf_ms = static_cast<quint64>(roster_file.lastModified().msecsTo(QDateTime::currentDateTime())); //oh, why signed ??!
+        if(rf_ms > config::defaultCacheValidityTimeout_ms())
+        {
+            qDebug() << "Removing cache and performing full fetch";
+            QFile(roster_file.path()).remove();
+        }
+
+        qDebug() << "Reading file: [" << roster_file.filePath() << "]";
+        QFile file(roster_file.filePath());
+        if(file.open(QIODevice::ReadOnly))
+        {
+            parse_json(roster_file, file.readAll(), false);
+            return;
+        }
+        else
+        {
+            qDebug() << "Failed to open file [" << roster_file.path() << "]. Performing fetching.";
+        }
+    }
+
     QObject::connect(_nam.get(),
                      &QNetworkAccessManager::finished,
                      this,
-                     [this](QNetworkReply* reply)
+                     [this, parse_json, roster_file](QNetworkReply* reply)
     {
         // handle error
         const auto ec = reply->error();
         if (ec)
         {
-            qDebug() << reply->errorString();
+            QString ec("Error while fetching json: [" + reply->errorString() + "]");
+            qDebug() << ec;
             emit failed(ec);
             return;
         }
 
-        const QByteArray result = reply->readAll();
-        QThread *thread = QThread::create([this, result]()
-        {
-            auto json = std::make_shared<nlohmann::json>();
-            *json = json->parse(result.begin(), result.end()).at("roster");
-            qDebug() << "Fetched : [" << json->size() << "] elements";
-            emit succeeded(json);
-        }
-        );
-        connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-        thread->start();
+        auto data = reply->readAll();
+        parse_json(roster_file, data, true);
     });
 
-    _nam->get(QNetworkRequest(url.isEmpty() ? defaultUrl : url));
+    _nam->get(QNetworkRequest(url.isEmpty() ? config::defaultFetchUrl() : url));
 }

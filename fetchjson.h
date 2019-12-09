@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QNetworkReply>
 #include <QMetaType>
+#include <QNetworkAccessManager>
 
 #include <3rdparty/nlohmann/json.hpp>
 
@@ -18,7 +18,7 @@ public:
     void fetch(const QUrl&);
 
 signals:
-    void failed(const QNetworkReply::NetworkError& ec);
+    void failed(const QString& ec);
     void succeeded(std::shared_ptr<nlohmann::json>);
 
 public slots:

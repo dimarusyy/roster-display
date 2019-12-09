@@ -11,18 +11,15 @@ FilteredRosterModel::FilteredRosterModel(QObject* parent)
 
     setFilterCaseSensitivity(Qt::CaseInsensitive);
     setSortingColumn(RosterListModel::GroupOrder);
-    sort(0);
 }
 
 void FilteredRosterModel::setFilter(const QString& filter)
 {
     setFilterFixedString(filter);
-    sort(0);
 }
 
 void FilteredRosterModel::setSortingColumn(int role)
 {
     setFilterRole(static_cast<RosterListModel::RosterRoles>(role));
     setSortRole(static_cast<RosterListModel::RosterRoles>(role));
-    sort(0);
 }
