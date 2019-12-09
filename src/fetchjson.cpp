@@ -23,8 +23,10 @@ void FetchJson::fetch(const QUrl& url)
             throw std::runtime_error("Faled to create dir:[" + fi.dir().path().toStdString() + "]");
         }
 
-        // save
+        // remove old file
         QFile(fi.path()).remove();
+
+        // save
         QFile file(fi.filePath());
         qDebug() << "Creating file: [" << fi.filePath() << "]";
         if(file.open(QIODevice::WriteOnly))
@@ -42,13 +44,13 @@ void FetchJson::fetch(const QUrl& url)
             try {
                 auto json = std::make_shared<nlohmann::json>();
                 *json = json->parse(data.begin(), data.end()).at("roster");
-                qDebug() << "Fetched : [" << json->size() << "] elements";
                 if(updateCache) update_cache(fi, data);
                 emit succeeded(json);
+                qDebug() << "Fetched : [" << json->size() << "] elements";
             } catch (std::exception ex) {
                 QString ec ("Failed to parse json [" + QString::fromStdString(ex.what()) + "]");
-                qDebug() << ec;
                 emit failed(ec);
+                qDebug() << ec;
             }
         }
         );
