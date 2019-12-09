@@ -17,16 +17,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     3rdparty/nlohmann/json.hpp \
-    config.h \
-    fetchjson.h \
-    filteredrostermodel.h \
-    rosterlistmodel.h
+    src/config.h \
+    src/fetchjson.h \
+    src/filteredrostermodel.h \
+    src/rosterlistmodel.h
 
 SOURCES += \
-        config.cpp \
-        fetchjson.cpp \
-        filteredrostermodel.cpp \
-        main.cpp \
-        rosterlistmodel.cpp
+        src/config.cpp \
+        src/fetchjson.cpp \
+        src/filteredrostermodel.cpp \
+        src/main.cpp \
+        src/rosterlistmodel.cpp
 
 RESOURCES += qml.qrc

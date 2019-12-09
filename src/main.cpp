@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
     qmlRegisterType<FilteredRosterModel>("App", 1, 0, "FilteredRosterModel");
 
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
+    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine,
                      &QQmlApplicationEngine::objectCreated,
                      &app,
